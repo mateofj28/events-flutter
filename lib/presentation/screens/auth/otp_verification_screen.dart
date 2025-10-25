@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:go_router/go_router.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
-import 'package:eventos_app/core/providers/auth_provider.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
-import 'package:eventos_app/presentation/screens/main_screen.dart';
 
-class OTPVerificationScreen extends ConsumerStatefulWidget {
+class OTPVerificationScreen extends StatefulWidget {
   final String email;
 
   const OTPVerificationScreen({
@@ -17,10 +15,10 @@ class OTPVerificationScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
+  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
 }
 
-class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
+class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   
@@ -32,10 +30,6 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   void initState() {
     super.initState();
     _startTimer();
-    // Enviar OTP automáticamente
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(authProvider.notifier).sendOTP(widget.email);
-    });
   }
 
   @override
@@ -69,41 +63,6 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
-
-    // Manejar navegación cuando el usuario se autentica
-    if (authState.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      });
-    }
-    
-    // Mostrar errores
-    if (authState.error != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Iconsax.warning_2, color: Colors.white),
-                SizedBox(width: 12),
-                Expanded(child: Text('Error de verificación')),
-              ],
-            ),
-            backgroundColor: AppTheme.errorColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-        ref.read(authProvider.notifier).clearError();
-      });
-    }
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -129,12 +88,12 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
               const SizedBox(height: 32),
               
               // Botón verificar
-              _buildVerifyButton(authState),
+              _buildVerifyButton(),
               
               const SizedBox(height: 24),
               
               // Reenviar código
-              _buildResendSection(authState),
+              _buildResendSection(),
               
               const SizedBox(height: 32),
               
@@ -264,7 +223,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
     );
   }
 
-  Widget _buildVerifyButton(AuthState authState) {
+  Widget _buildVerifyButton() {
     final otp = _controllers.map((c) => c.text).join();
     final isComplete = otp.length == 6;
 
@@ -275,12 +234,12 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
         colors: [AppTheme.successColor, Color(0xFF55A3FF)],
       ),
       width: double.infinity,
-      isLoading: authState.isLoading,
-      onPressed: (!isComplete || authState.isLoading) ? null : _verifyOTP,
+      isLoading: false,
+      onPressed: !isComplete ? null : _verifyOTP,
     );
   }
 
-  Widget _buildResendSection(AuthState authState) {
+  Widget _buildResendSection() {
     return Column(
       children: [
         if (!_canResend) ...[
@@ -301,7 +260,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
           const SizedBox(height: 8),
           
           TextButton(
-            onPressed: authState.isLoading ? null : _resendOTP,
+            onPressed: _resendOTP,
             child: Text(
               'Reenviar código',
               style: TextStyle(
@@ -365,16 +324,13 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
     final otp = _controllers.map((c) => c.text).join();
     
     if (otp.length == 6) {
-      final success = await ref.read(authProvider.notifier).verifyOTP(otp);
-      
-      if (success) {
-        // La navegación se maneja en el listener
-      }
+      // TODO: Implementar verificación OTP
+      context.go('/mis-eventos');
     }
   }
 
   void _resendOTP() async {
-    await ref.read(authProvider.notifier).sendOTP(widget.email);
+    // TODO: Implementar reenvío de OTP
     
     // Limpiar campos
     for (var controller in _controllers) {

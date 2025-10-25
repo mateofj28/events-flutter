@@ -3,20 +3,21 @@ import 'package:iconsax/iconsax.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
-import 'package:eventos_app/presentation/screens/auth/register_screen.dart';
+import 'package:eventos_app/presentation/screens/validator/validator_main_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SimpleLoginScreen extends StatefulWidget {
+  const SimpleLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SimpleLoginScreen> createState() => _SimpleLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SimpleLoginScreenState extends State<SimpleLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -48,16 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
               
               // Botón de login
               _buildLoginButton(),
-              
-              const SizedBox(height: 24),
-              
-              // Divider
-              _buildDivider(),
-              
-              const SizedBox(height: 24),
-              
-              // Crear cuenta
-              _buildRegisterSection(),
               
               const SizedBox(height: 40),
               
@@ -117,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            enabled: true,
+            enabled: !_isLoading,
             decoration: InputDecoration(
               labelText: 'Correo Electrónico',
               prefixIcon: const Icon(Iconsax.sms),
@@ -146,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
-            enabled: true,
+            enabled: !_isLoading,
             decoration: InputDecoration(
               labelText: 'Contraseña',
               prefixIcon: const Icon(Iconsax.lock),
@@ -178,23 +169,6 @@ class _LoginScreenState extends State<LoginScreen> {
               return null;
             },
           ),
-          
-          const SizedBox(height: 12),
-          
-          // Olvidé mi contraseña
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: _forgotPassword,
-              child: Text(
-                '¿Olvidaste tu contraseña?',
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -206,72 +180,8 @@ class _LoginScreenState extends State<LoginScreen> {
       icon: Iconsax.login,
       gradient: AppTheme.primaryGradient,
       width: double.infinity,
-      isLoading: false,
-      onPressed: _login,
-    );
-  }
-
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppTheme.textSecondaryColor.withValues(alpha: 0.3),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'o',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppTheme.textSecondaryColor.withValues(alpha: 0.3),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRegisterSection() {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            '¿No tienes una cuenta?',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RegisterScreen(),
-                ),
-              );
-            },
-            child: Text(
-              'Crear cuenta nueva',
-              style: TextStyle(
-                color: AppTheme.primaryColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
+      isLoading: _isLoading,
+      onPressed: _isLoading ? null : _login,
     );
   }
 
@@ -370,29 +280,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implementar login
-      context.go('/mis-eventos');
+      setState(() {
+        _isLoading = true;
+      });
+      
+      // Simular delay de login
+      await Future.delayed(const Duration(seconds: 1));
+      
+      setState(() {
+        _isLoading = false;
+      });
+      
+      // Determinar navegación según email
+      if (_emailController.text.trim() == 'validator@eventos.com') {
+        context.go('/validator');
+      } else if (_emailController.text.trim() == 'admin@eventos.com') {
+        context.go('/mis-eventos'); // Los admins van a la misma interfaz por ahora
+      } else {
+        context.go('/mis-eventos'); // Usuarios normales
+      }
     }
-  }
-
-  void _forgotPassword() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Iconsax.info_circle, color: Colors.white),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text('Función de recuperación próximamente'),
-            ),
-          ],
-        ),
-        backgroundColor: AppTheme.primaryColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
   }
 }
