@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
+import 'package:eventos_app/core/providers/auth_provider.dart';
+import 'package:eventos_app/core/models/user.dart';
 
-class OTPVerificationScreen extends StatefulWidget {
+class OTPVerificationScreen extends ConsumerStatefulWidget {
   final String email;
 
   const OTPVerificationScreen({
@@ -15,10 +18,10 @@ class OTPVerificationScreen extends StatefulWidget {
   });
 
   @override
-  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
+  ConsumerState<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
 }
 
-class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
+class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   
@@ -324,13 +327,51 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     final otp = _controllers.map((c) => c.text).join();
     
     if (otp.length == 6) {
-      // TODO: Implementar verificación OTP
-      context.go('/mis-eventos');
+      final authNotifier = ref.read(authProvider.notifier);
+      
+      final success = await authNotifier.verifyOTP(otp);
+      
+      if (success) {
+        // OTP verificado correctamente, el usuario ya está autenticado
+        final user = ref.read(authProvider).user;
+        if (user != null) {
+          // Navegar según el rol del usuario
+          switch (user.rol) {
+            case UserRole.validator:
+              context.go('/validator');
+              break;
+            case UserRole.admin:
+            case UserRole.user:
+              context.go('/mis-eventos');
+              break;
+          }
+        }
+      } else {
+        // Mostrar error de OTP incorrecto
+        final error = ref.read(authProvider).error;
+        if (error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          
+          // Limpiar campos OTP
+          for (var controller in _controllers) {
+            controller.clear();
+          }
+          _focusNodes[0].requestFocus();
+        }
+      }
     }
   }
 
   void _resendOTP() async {
-    // TODO: Implementar reenvío de OTP
+    final authNotifier = ref.read(authProvider.notifier);
+    
+    await authNotifier.sendOTP(widget.email);
     
     // Limpiar campos
     for (var controller in _controllers) {

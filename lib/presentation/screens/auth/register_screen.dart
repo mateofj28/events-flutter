@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:go_router/go_router.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
 import 'package:eventos_app/core/providers/auth_provider.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
-import 'package:eventos_app/presentation/screens/auth/otp_verification_screen.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -117,7 +117,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         Row(
           children: [
             IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.go('/login'),
               icon: const Icon(Iconsax.arrow_left),
               style: IconButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
@@ -467,7 +467,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           const SizedBox(height: 8),
           
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.go('/login'),
             child: Text(
               'Iniciar sesión',
               style: TextStyle(
@@ -495,14 +495,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       
       if (success) {
         // Navegar a verificación OTP
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OTPVerificationScreen(
-              email: _emailController.text.trim(),
+        context.go('/otp-verification', extra: _emailController.text.trim());
+      } else {
+        // Mostrar error
+        final error = ref.read(authProvider).error;
+        if (error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: Colors.red,
             ),
-          ),
-        );
+          );
+        }
       }
     }
   }

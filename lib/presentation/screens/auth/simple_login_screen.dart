@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
-import 'package:eventos_app/presentation/screens/validator/validator_main_screen.dart';
+import 'package:eventos_app/core/providers/auth_provider.dart';
+import 'package:eventos_app/core/models/user.dart';
 
-class SimpleLoginScreen extends StatefulWidget {
+class SimpleLoginScreen extends ConsumerStatefulWidget {
   const SimpleLoginScreen({super.key});
 
   @override
-  State<SimpleLoginScreen> createState() => _SimpleLoginScreenState();
+  ConsumerState<SimpleLoginScreen> createState() => _SimpleLoginScreenState();
 }
 
-class _SimpleLoginScreenState extends State<SimpleLoginScreen> {
+class _SimpleLoginScreenState extends ConsumerState<SimpleLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -49,6 +51,11 @@ class _SimpleLoginScreenState extends State<SimpleLoginScreen> {
               
               // Botón de login
               _buildLoginButton(),
+              
+              const SizedBox(height: 16),
+              
+              // Botón de registro
+              _buildRegisterButton(),
               
               const SizedBox(height: 40),
               
@@ -175,13 +182,42 @@ class _SimpleLoginScreenState extends State<SimpleLoginScreen> {
   }
 
   Widget _buildLoginButton() {
+    final authState = ref.watch(authProvider);
     return GradientButton(
       text: 'Iniciar Sesión',
       icon: Iconsax.login,
       gradient: AppTheme.primaryGradient,
       width: double.infinity,
-      isLoading: _isLoading,
-      onPressed: _isLoading ? null : _login,
+      isLoading: authState.isLoading,
+      onPressed: authState.isLoading ? null : _login,
+    );
+  }
+
+  Widget _buildRegisterButton() {
+    return OutlinedButton(
+      onPressed: () => context.go('/register'),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppTheme.primaryColor,
+        side: BorderSide(color: AppTheme.primaryColor),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Iconsax.user_add, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            '¿No tienes cuenta? Regístrate',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -280,24 +316,38 @@ class _SimpleLoginScreenState extends State<SimpleLoginScreen> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      final authNotifier = ref.read(authProvider.notifier);
       
-      // Simular delay de login
-      await Future.delayed(const Duration(seconds: 1));
+      final success = await authNotifier.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
       
-      setState(() {
-        _isLoading = false;
-      });
-      
-      // Determinar navegación según email
-      if (_emailController.text.trim() == 'validator@eventos.com') {
-        context.go('/validator');
-      } else if (_emailController.text.trim() == 'admin@eventos.com') {
-        context.go('/mis-eventos'); // Los admins van a la misma interfaz por ahora
+      if (success) {
+        final user = ref.read(authProvider).user;
+        if (user != null) {
+          // Navegar según el rol del usuario
+          switch (user.rol) {
+            case UserRole.validator:
+              context.go('/validator');
+              break;
+            case UserRole.admin:
+            case UserRole.user:
+              context.go('/mis-eventos');
+              break;
+          }
+        }
       } else {
-        context.go('/mis-eventos'); // Usuarios normales
+        // Mostrar error
+        final error = ref.read(authProvider).error;
+        if (error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }

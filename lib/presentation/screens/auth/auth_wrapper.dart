@@ -13,30 +13,30 @@ class AuthWrapper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
 
-    return authState.when(
-      data: (user) {
-        if (user == null) {
-          return const SimpleLoginScreen();
-        }
-        
-        // Navegar según el rol del usuario
-        switch (user.rol) {
-          case UserRole.validator:
-            return const ValidatorMainScreen();
-          case UserRole.admin:
-          case UserRole.user:
-          default:
-            return const MainScreen(
-              child: SizedBox(), // Placeholder, se manejará con el router
-            );
-        }
-      },
-      loading: () => const Scaffold(
+    // Mostrar loading si está cargando
+    if (authState.isLoading) {
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
-      ),
-      error: (error, stack) => const SimpleLoginScreen(),
-    );
+      );
+    }
+
+    // Si no está autenticado, mostrar login
+    if (!authState.isAuthenticated || authState.user == null) {
+      return const SimpleLoginScreen();
+    }
+
+    // Si está autenticado, navegar según el rol del usuario
+    final user = authState.user!;
+    switch (user.rol) {
+      case UserRole.validator:
+        return const ValidatorMainScreen();
+      case UserRole.admin:
+      case UserRole.user:
+        return const MainScreen(
+          child: SizedBox(), // Placeholder, se manejará con el router
+        );
+    }
   }
 }

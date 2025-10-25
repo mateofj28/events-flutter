@@ -7,12 +7,14 @@ class AuthState {
   final bool isLoading;
   final String? error;
   final bool isAuthenticated;
+  final User? pendingUser; // Usuario pendiente de verificación OTP
 
   const AuthState({
     this.user,
     this.isLoading = false,
     this.error,
     this.isAuthenticated = false,
+    this.pendingUser,
   });
 
   AuthState copyWith({
@@ -20,12 +22,14 @@ class AuthState {
     bool? isLoading,
     String? error,
     bool? isAuthenticated,
+    User? pendingUser,
   }) {
     return AuthState(
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
       error: error,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      pendingUser: pendingUser ?? this.pendingUser,
     );
   }
 }
@@ -129,7 +133,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return false;
       }
       
-      // Crear nuevo usuario
+      // Crear nuevo usuario (pendiente de verificación)
       final newUser = User(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         nombre: nombre,
@@ -141,12 +145,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         createdAt: DateTime.now(),
       );
       
-      _users.add(newUser);
-      
+      // No agregar a la lista aún, esperar verificación OTP
       state = state.copyWith(
-        user: newUser,
+        pendingUser: newUser,
         isLoading: false,
-        isAuthenticated: true,
         error: null,
       );
       
@@ -176,11 +178,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return false;
       }
       
-      // OTP válido
-      state = state.copyWith(
-        isLoading: false,
-        error: null,
-      );
+      // OTP válido - completar registro si hay usuario pendiente
+      if (state.pendingUser != null) {
+        _users.add(state.pendingUser!);
+        final authenticatedUser = state.pendingUser!.copyWith(lastLogin: DateTime.now());
+        state = state.copyWith(
+          user: authenticatedUser,
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+          pendingUser: null,
+        );
+      } else {
+        // Solo verificación OTP sin registro
+        state = state.copyWith(
+          isLoading: false,
+          error: null,
+        );
+      }
       
       return true;
     } catch (e) {

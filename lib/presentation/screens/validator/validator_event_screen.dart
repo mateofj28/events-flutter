@@ -390,43 +390,46 @@ class ValidatorEventScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           
           // Grid de estadísticas
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.5,
-            children: [
-              _buildStatCard(
-                context,
-                'Total',
-                stats['total'].toString(),
-                Iconsax.ticket,
-                AppTheme.primaryColor,
-              ),
-              _buildStatCard(
-                context,
-                'Activos',
-                stats['active'].toString(),
-                Iconsax.tick_circle,
-                AppTheme.successColor,
-              ),
-              _buildStatCard(
-                context,
-                'Validados',
-                stats['validated'].toString(),
-                Iconsax.scan_barcode,
-                AppTheme.accentColor,
-              ),
-              _buildStatCard(
-                context,
-                'Pendientes',
-                stats['pending'].toString(),
-                Iconsax.clock,
-                AppTheme.warningColor,
-              ),
-            ],
+          SizedBox(
+            height: 200, // Altura fija para evitar overflow
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _buildStatCard(
+                  context,
+                  'Total',
+                  stats['total'].toString(),
+                  Iconsax.ticket,
+                  AppTheme.primaryColor,
+                ),
+                _buildStatCard(
+                  context,
+                  'Activos',
+                  stats['active'].toString(),
+                  Iconsax.tick_circle,
+                  AppTheme.successColor,
+                ),
+                _buildStatCard(
+                  context,
+                  'Validados',
+                  stats['validated'].toString(),
+                  Iconsax.scan_barcode,
+                  AppTheme.accentColor,
+                ),
+                _buildStatCard(
+                  context,
+                  'Pendientes',
+                  stats['pending'].toString(),
+                  Iconsax.clock,
+                  AppTheme.warningColor,
+                ),
+              ],
+            ),
           ),
         ],
       ),
