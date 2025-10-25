@@ -194,7 +194,23 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
         return SizedBox(
           width: 50,
           height: 60,
-          child: TextFormField(
+          child: RawKeyboardListener(
+            focusNode: FocusNode(),
+            onKey: (RawKeyEvent event) {
+              if (event is RawKeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.backspace) {
+                  if (_controllers[index].text.isEmpty && index > 0) {
+                    _focusNodes[index - 1].requestFocus();
+                    _controllers[index - 1].clear();
+                  }
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index > 0) {
+                  _focusNodes[index - 1].requestFocus();
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index < 5) {
+                  _focusNodes[index + 1].requestFocus();
+                }
+              }
+            },
+            child: TextFormField(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
             textAlign: TextAlign.center,
@@ -242,22 +258,64 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
             ],
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                if (index < 5) {
-                  _focusNodes[index + 1].requestFocus();
-                } else {
-                  _focusNodes[index].unfocus();
-                  _verifyOTP();
-                }
-              } else if (value.isEmpty && index > 0) {
-                _focusNodes[index - 1].requestFocus();
-              }
+            onChanged: (value) => _handleOTPInput(value, index),
+            onTap: () {
+              // Seleccionar todo el texto cuando se toca el campo
+              _controllers[index].selection = TextSelection(
+                baseOffset: 0,
+                extentOffset: _controllers[index].text.length,
+              );
             },
+            ),
           ),
         );
       }),
     );
+  }
+
+  void _handleOTPInput(String value, int index) {
+    // Si se ingresa un valor
+    if (value.isNotEmpty) {
+      // Si se ingresa más de un carácter (pegado), distribuir los dígitos
+      if (value.length > 1) {
+        _handlePastedOTP(value, index);
+        return;
+      }
+      
+      // Mover al siguiente campo si no es el último
+      if (index < 5) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        // Si es el último campo, quitar el foco y verificar
+        _focusNodes[index].unfocus();
+        _verifyOTP();
+      }
+    } else {
+      // Si se elimina el valor (backspace)
+      if (index > 0) {
+        // Mover al campo anterior
+        _focusNodes[index - 1].requestFocus();
+      }
+    }
+  }
+
+  void _handlePastedOTP(String pastedText, int startIndex) {
+    // Limpiar texto pegado y tomar solo dígitos
+    final digits = pastedText.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    // Distribuir los dígitos en los campos disponibles
+    for (int i = 0; i < digits.length && (startIndex + i) < 6; i++) {
+      _controllers[startIndex + i].text = digits[i];
+    }
+    
+    // Enfocar el siguiente campo disponible o el último si se completó
+    final nextIndex = (startIndex + digits.length).clamp(0, 5);
+    if (nextIndex < 6) {
+      _focusNodes[nextIndex].requestFocus();
+    } else {
+      _focusNodes[5].unfocus();
+      _verifyOTP();
+    }
   }
 
   Widget _buildVerifyButton() {
