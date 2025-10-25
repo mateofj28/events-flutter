@@ -43,25 +43,31 @@ class _ValidatorMainScreenState extends ConsumerState<ValidatorMainScreen> {
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            selectedItemColor: AppTheme.primaryColor,
-            unselectedItemColor: AppTheme.textSecondaryColor,
-            selectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-            ),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              selectedItemColor: AppTheme.primaryColor,
+              unselectedItemColor: AppTheme.textSecondaryColor,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+              ),
             items: [
               BottomNavigationBarItem(
                 icon: Container(
@@ -96,6 +102,7 @@ class _ValidatorMainScreenState extends ConsumerState<ValidatorMainScreen> {
                 label: 'Tickets',
               ),
             ],
+            ),
           ),
         ),
       ),

@@ -21,7 +21,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _documentoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   String _tipoDocumento = 'Cédula de Ciudadanía';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -80,27 +80,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              
+
               // Header con botón de regreso
               _buildHeader(),
-              
+
               const SizedBox(height: 32),
-              
+
               // Formulario
               _buildRegisterForm(authState),
-              
+
               const SizedBox(height: 24),
-              
+
               // Términos y condiciones
               _buildTermsCheckbox(),
-              
+
               const SizedBox(height: 24),
-              
+
               // Botón de registro
               _buildRegisterButton(authState),
-              
+
               const SizedBox(height: 24),
-              
+
               // Ya tienes cuenta
               _buildLoginSection(),
             ],
@@ -124,9 +124,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 foregroundColor: AppTheme.primaryColor,
               ),
             ),
-            
             const SizedBox(width: 16),
-            
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -141,23 +139,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           ],
         ),
-        
         const SizedBox(height: 24),
-        
         Text(
           'Crear cuenta nueva',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        
         const SizedBox(height: 8),
-        
         Text(
           'Completa tus datos para comenzar',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: AppTheme.textSecondaryColor,
-          ),
+                color: AppTheme.textSecondaryColor,
+              ),
         ),
       ],
     );
@@ -180,7 +174,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -190,9 +185,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Email
           TextFormField(
             controller: _emailController,
@@ -206,7 +201,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -219,9 +215,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Teléfono
           TextFormField(
             controller: _telefonoController,
@@ -235,7 +231,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -245,9 +242,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Tipo de documento
           DropdownButtonFormField<String>(
             initialValue: _tipoDocumento,
@@ -260,7 +257,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             items: _tiposDocumento.map((String tipo) {
@@ -272,15 +270,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
               );
             }).toList(),
-            onChanged: authState.isLoading ? null : (String? newValue) {
-              setState(() {
-                _tipoDocumento = newValue!;
-              });
-            },
+            onChanged: authState.isLoading
+                ? null
+                : (String? newValue) {
+                    setState(() {
+                      _tipoDocumento = newValue!;
+                    });
+                  },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Número de documento
           TextFormField(
             controller: _documentoController,
@@ -294,7 +294,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -304,9 +305,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Contraseña
           TextFormField(
             controller: _passwordController,
@@ -330,7 +331,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -343,9 +345,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Confirmar contraseña
           TextFormField(
             controller: _confirmPasswordController,
@@ -369,7 +371,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             validator: (value) {
@@ -400,7 +403,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           },
           activeColor: AppTheme.primaryColor,
         ),
-        
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -460,12 +462,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           Text(
             '¿Ya tienes una cuenta?',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
+                  color: AppTheme.textSecondaryColor,
+                ),
           ),
-          
           const SizedBox(height: 8),
-          
           TextButton(
             onPressed: () => context.go('/login'),
             child: Text(
@@ -485,14 +485,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _register() async {
     if (_formKey.currentState!.validate()) {
       final success = await ref.read(authProvider.notifier).register(
-        nombre: _nombreController.text.trim(),
-        email: _emailController.text.trim(),
-        telefono: _telefonoController.text.trim(),
-        documento: _documentoController.text.trim(),
-        tipoDocumento: _tipoDocumento,
-        password: _passwordController.text,
-      );
-      
+            nombre: _nombreController.text.trim(),
+            email: _emailController.text.trim(),
+            telefono: _telefonoController.text.trim(),
+            documento: _documentoController.text.trim(),
+            tipoDocumento: _tipoDocumento,
+            password: _passwordController.text,
+          );
+
       if (success) {
         // Navegar a verificación OTP
         context.go('/otp-verification', extra: _emailController.text.trim());

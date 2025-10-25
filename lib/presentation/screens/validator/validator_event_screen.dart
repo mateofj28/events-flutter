@@ -35,9 +35,9 @@ class ValidatorEventScreen extends ConsumerWidget {
                 title: Text(
                   'Mi Evento Asignado',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 centerTitle: true,
                 background: Stack(
@@ -57,7 +57,7 @@ class ValidatorEventScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    
+
                     // Círculos decorativos
                     Positioned(
                       top: 60,
@@ -88,7 +88,7 @@ class ValidatorEventScreen extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           // Contenido
           SliverToBoxAdapter(
             child: Padding(
@@ -98,22 +98,22 @@ class ValidatorEventScreen extends ConsumerWidget {
                 children: [
                   // Información del validador
                   _buildValidatorInfo(context, user),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Información del evento
                   _buildEventInfo(context),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Estadísticas
                   _buildStatsSection(context, ticketStats),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Acciones rápidas
                   _buildQuickActions(context),
-                  
+
                   const SizedBox(height: 100), // Espacio para bottom nav
                 ],
               ),
@@ -162,9 +162,7 @@ class ValidatorEventScreen extends ConsumerWidget {
               size: 28,
             ),
           ),
-          
           const SizedBox(width: 16),
-          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,12 +170,13 @@ class ValidatorEventScreen extends ConsumerWidget {
                 Text(
                   user?.nombre ?? 'Validator Demo',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppTheme.successColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -195,9 +194,9 @@ class ValidatorEventScreen extends ConsumerWidget {
                 Text(
                   'ID: ${user?.id ?? 'VAL-001'}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textSecondaryColor,
-                    fontFamily: 'monospace',
-                  ),
+                        color: AppTheme.textSecondaryColor,
+                        fontFamily: 'monospace',
+                      ),
                 ),
               ],
             ),
@@ -243,15 +242,15 @@ class ValidatorEventScreen extends ConsumerWidget {
                 child: Text(
                   'Evento Asignado',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Información del evento
           _buildEventDetail(
             context,
@@ -260,9 +259,9 @@ class ValidatorEventScreen extends ConsumerWidget {
             Iconsax.code,
             AppTheme.primaryColor,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           _buildEventDetail(
             context,
             'Fecha y Hora',
@@ -270,9 +269,9 @@ class ValidatorEventScreen extends ConsumerWidget {
             Iconsax.calendar_1,
             AppTheme.warningColor,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           _buildEventDetail(
             context,
             'Ubicación',
@@ -280,9 +279,9 @@ class ValidatorEventScreen extends ConsumerWidget {
             Iconsax.location,
             AppTheme.successColor,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           _buildEventDetail(
             context,
             'Organizador',
@@ -324,16 +323,16 @@ class ValidatorEventScreen extends ConsumerWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondaryColor,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: AppTheme.textSecondaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
@@ -380,25 +379,26 @@ class ValidatorEventScreen extends ConsumerWidget {
                 child: Text(
                   'Estadísticas de Tickets',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Grid de estadísticas
           SizedBox(
-            height: 200, // Altura fija para evitar overflow
+            height: 280, // Altura aumentada para más espacio
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 1.5,
+              childAspectRatio:
+                  1.3, // Reducido para hacer las tarjetas más altas
               children: [
                 _buildStatCard(
                   context,
@@ -444,7 +444,8 @@ class ValidatorEventScreen extends ConsumerWidget {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(
+          8), // Aumentado de nuevo a 16 para mejor apariencia
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
@@ -458,23 +459,25 @@ class ValidatorEventScreen extends ConsumerWidget {
           Icon(
             icon,
             color: color,
-            size: 24,
+            size: 20, // Aumentado de nuevo a 24
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 8), // Aumentado a 8
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+                  // Vuelto a headlineSmall
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 4), // Aumentado a 4
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -519,15 +522,15 @@ class ValidatorEventScreen extends ConsumerWidget {
                 child: Text(
                   'Acciones Rápidas',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Botones de acción
           Row(
             children: [

@@ -112,6 +112,22 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => context.go('/login'),
+              icon: const Icon(Iconsax.arrow_left),
+              style: IconButton.styleFrom(
+                backgroundColor: AppTheme.successColor.withValues(alpha: 0.1),
+                foregroundColor: AppTheme.successColor,
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        
+        const SizedBox(height: 16),
+        
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -176,8 +192,8 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(6, (index) {
         return SizedBox(
-          width: 45,
-          height: 55,
+          width: 50,
+          height: 60,
           child: TextFormField(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
@@ -186,13 +202,23 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
             maxLength: 1,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimaryColor,
+              fontSize: 20,
             ),
             decoration: InputDecoration(
               counterText: '',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: AppTheme.textSecondaryColor.withValues(alpha: 0.3),
+                  color: AppTheme.textSecondaryColor.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: AppTheme.textSecondaryColor.withValues(alpha: 0.5),
+                  width: 1.5,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -202,8 +228,16 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                   width: 2,
                 ),
               ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppTheme.errorColor,
+                  width: 1.5,
+                ),
+              ),
               filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
             ),
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,

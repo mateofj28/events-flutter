@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:go_router/go_router.dart';
 import 'package:eventos_app/core/theme/app_theme.dart';
 import 'package:eventos_app/core/providers/theme_provider.dart';
+import 'package:eventos_app/core/providers/auth_provider.dart';
 import 'package:eventos_app/presentation/widgets/gradient_button.dart';
 import 'package:eventos_app/presentation/screens/editar_perfil_screen.dart';
 import 'package:eventos_app/presentation/screens/editar_ubicacion_screen.dart';
@@ -103,7 +105,7 @@ class ConfiguracionesScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                   _buildAboutSection(context),
                   const SizedBox(height: 24),
-                  _buildDangerZone(context),
+                  _buildDangerZone(context, ref),
                 ],
               ),
             ),
@@ -578,7 +580,7 @@ class ConfiguracionesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDangerZone(BuildContext context) {
+  Widget _buildDangerZone(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDarkMode ? AppTheme.darkCardColor : Colors.white;
     final dangerBackground = isDarkMode
@@ -649,6 +651,20 @@ class ConfiguracionesScreen extends ConsumerWidget {
                   ),
             ),
             const SizedBox(height: 20),
+            
+            // Botón de cerrar sesión
+            GradientButton(
+              text: 'Cerrar Sesión',
+              icon: Iconsax.logout,
+              gradient: LinearGradient(
+                colors: [AppTheme.warningColor, const Color(0xFFFFB347)],
+              ),
+              width: double.infinity,
+              onPressed: () => _showLogoutDialog(context, ref),
+            ),
+            
+            const SizedBox(height: 16),
+            
             GradientButton(
               text: 'Eliminar Cuenta',
               icon: Iconsax.trash,
@@ -837,6 +853,50 @@ class ConfiguracionesScreen extends ConsumerWidget {
         Iconsax.message_question, AppTheme.successColor);
   }
 
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.warningColor, const Color(0xFFFFB347)],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Iconsax.logout, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text('Cerrar Sesión'),
+          ],
+        ),
+        content: const Text(
+          '¿Estás seguro de que quieres cerrar sesión?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          GradientButton(
+            text: 'Cerrar Sesión',
+            gradient: LinearGradient(
+              colors: [AppTheme.warningColor, const Color(0xFFFFB347)],
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              _logout(context, ref);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -881,6 +941,22 @@ class ConfiguracionesScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _logout(BuildContext context, WidgetRef ref) {
+    // Cerrar sesión usando el AuthProvider
+    ref.read(authProvider.notifier).logout();
+    
+    // Mostrar mensaje de confirmación
+    _showSnackBar(
+      context, 
+      'Sesión cerrada exitosamente', 
+      Iconsax.logout, 
+      AppTheme.successColor
+    );
+    
+    // Navegar al login
+    context.go('/login');
   }
 
   void _showSnackBar(
